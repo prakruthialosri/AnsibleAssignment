@@ -1,0 +1,70 @@
+'http://ppa.launchpad.net/webupd8team/java/ubuntu noble Release' does not have a Release file."}
+
+sudo add-apt-repository --remove ppa:mc3man/trusty-media
+
+
+sudo add-apt-repository --remove ppa:webupd8team/java
+
+
+---
+# tasks file for tomcat
+- name: install update
+    apt:
+        update_cache : yes
+- name: install default jdk
+    apt:
+       name: java jdk
+       state: present
+       update_cache : yes
+
+
+
+
+---
+# tasks file for tomcat
+- name : Updating apt
+  apt:
+    update_cache: yes
+- name : Installing Default JDK
+  apt:
+    name : default-jdk
+    state : present
+    update_cache : yes
+- name : Adding group
+  group:
+    name : tomcat
+    state : present
+- name : Adding Useri
+  user:
+    name : tomcat
+    shell : /bin/false
+    group : tomcat
+    home : /opt/tomcat
+- name : Installing Curl
+  apt:
+    name: curl
+    state: present
+- name : Dowloading Package
+  shell:
+    cmd: sudo curl -O https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.93/bin/apache-tomcat-9.0.93.tar.gz
+- name : Create Tomcat Directory
+  file:
+    path: /opt/tomcat
+    state: directory
+- name: install tomcat
+  unarchive:
+    src: /home/ubuntu/apache-tomcat-9.0.93.tar.gz
+    dest: /opt/tomcat
+    extra_opts: [--strip-component=1]
+    remote_src: true
+- name: change permission
+  file:
+    path: /opt/tomcat
+    group : tomcat
+    owner:  tomcat
+    mode :  g=rX
+    recurse: yes
+- name: copy the files
+  copy:
+    src:  /etc/systemd/system/tomcat.service
+    dest: /etc/systemd/system/
